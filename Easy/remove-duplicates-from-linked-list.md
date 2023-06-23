@@ -2,19 +2,19 @@
 
 ### Understanding the problem
 
-I am given the head of a singly linked list. The nodes of the linked list are going to be sorted in ascending order with respect to their values and the values are going to be integers. I am asked to write a function that is going to remove all the nodes with duplicate values and return the modified linked list. The linked list should be modified in place and the nodes should remain in their original order.
+We are given the head of a singly linked list. The nodes of the linked list are going to be sorted in ascending order with respect to their values and the values are going to be integers. We are asked to write a function that is going to remove all the nodes with duplicate values and return the modified linked list. The linked list should be modified in place and the nodes should remain in their original order.
 
 #
 
 ### Approach 1
 
-Since the linked list is sorted, it means all of the duplicate values are grouped together. So I would keep track of the node I am currently at, and compare its value to the value of the next node. If they are equal to each other, delete the next node; otherwise update the current node to the next node. Lastly, return the head of the modified linked list.
+Since the linked list is sorted, all of the duplicate values are grouped together. Therefore we can determine whether a node is a duplicate by comparing its value to the node after it.
 
-### Time & Space Complexity
+We traverse the linked list. At each step we compare current node's value to the value of the next node. If they are the same, delete the next node by pointing current node's next pointer directly to the one after the next node. Otherwise we move on to the next node. Return the head of the modified linked list at the end.
 
-O(n) time | O(1) space, where n is the number of nodes in the Linked List.
+### Implementation
 
-### Solution 1
+JavaScript:
 
 ```js
 // This is an input class. Do not edit.
@@ -27,8 +27,10 @@ class LinkedList {
 
 function removeDuplicatesFromLinkedList(linkedList) {
   let currNode = linkedList;
+
   while (currNode !== null && currNode.next !== null) {
     const nextNode = currNode.next;
+
     if (nextNode.value == currNode.value) {
       currNode.next = nextNode.next;
     } else {
@@ -40,7 +42,7 @@ function removeDuplicatesFromLinkedList(linkedList) {
 }
 ```
 
-### Solution 1 in Go
+Go:
 
 ```go
 package main
@@ -67,17 +69,21 @@ func RemoveDuplicatesFromLinkedList(linkedList *LinkedList) *LinkedList {
 }
 ```
 
+### Complexity Analysis
+
+- Time Complexity: O(N), where N is the number of nodes in the Linked List.
+
+- Space Complexity: O(1).
+
 #
 
 ### Approach 2
 
-Instead of deleting the duplicate nodes one at time, I can also remove all duplicate nodes in one go. I am going to loop over all of the nodes in the linked list. For each node I am going to check its value against its next neighbor's value, if they are the same, I am going to look at the next node of that neighbor and check if it has the same value as the current node; repeat the process until I find a node that has a different value than the current node; then I am going to change the next pointer of the current node to point to that node, which means all of the duplicate nodes are removed, and then I update the current node to that node.
+Instead of deleting the duplicate nodes one at a time, we can also remove all the duplicates in one go. When we get to a node whose next neighbor is a duplicate, we keep looking at the nodes after that neighbor until we find a node that has a different value. We then change the next pointer of the current node to point to the distinct node, thus removing all the duplicate nodes at once.
 
-### Time & Space Complexity
+### Implementation
 
-O(n) time | O(1) space, where n is the number of nodes in the Linked List.
-
-### Solution 2
+JavaScript:
 
 ```js
 // This is an input class. Do not edit.
@@ -107,7 +113,7 @@ function removeDuplicatesFromLinkedList(linkedList) {
 }
 ```
 
-### Solution 2 in Go
+Go:
 
 ```go
 package main
@@ -134,3 +140,9 @@ func RemoveDuplicatesFromLinkedList(linkedList *LinkedList) *LinkedList {
 	return linkedList
 }
 ```
+
+### Complexity Analysis
+
+- Time Complexity: O(N), where N is the number of nodes in the Linked List.
+
+- Space Complexity: O(1).

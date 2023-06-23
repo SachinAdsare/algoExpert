@@ -116,15 +116,17 @@ func BranchSums(root *BinaryTree) []int {
 }
 ```
 
-### Time & Space Complexity
+### Complexity Analysis
 
-O(n) time | O(n) space, where n is the number of nodes in the Binary Tree.
+- Time Complexity: O(N), where N is the number of nodes in the Binary Tree.
+
+- Space Complexity: O(N).
 
 #
 
 ### Approach 2: Recursive DFS
 
-Instead of using a stack to remember the next node to be visited and the running sum till that node, we can also use the call stack to track these info.
+Instead of using a stack to remember the next node to be visited and the running sum till that node, we can also use the call stack to track these info. We are going to define a recursive function `calculateBranchSums` and call it on each node, starting from the root node. At each recursive call, we will pass down the next node to visit, the sum of values from nodes above the node we are going to visit, and an array of branch sums which starts out empty. Whenever we get to a leaf node, we push the sum of all values in the current branch into the array of branch sums.
 
 ### Implementation
 
@@ -174,11 +176,11 @@ type BinaryTree struct {
 
 func BranchSums(root *BinaryTree) []int {
 	sums := []int{}
-	branchSumsImpl(root, 0, &sums)
+	calculateBranchSums(root, 0, &sums)
 	return sums
 }
 
-func branchSumsImpl(node *BinaryTree, runningSum int, sums *[]int) {
+func calculateBranchSums(node *BinaryTree, runningSum int, sums *[]int) {
 	if node == nil {
 		return
 	}
@@ -189,13 +191,14 @@ func branchSumsImpl(node *BinaryTree, runningSum int, sums *[]int) {
 		return
 	}
 
-	branchSumsImpl(node.Left, runningSum, sums)
-	branchSumsImpl(node.Right, runningSum, sums)
+	calculateBranchSums(node.Left, runningSum, sums)
+	calculateBranchSums(node.Right, runningSum, sums)
 }
 ```
 
-### Time & Space Complexity
+### Complexity Analysis
 
-O(n) time | O(n) space, where n is the number of nodes in the Binary Tree.
+- Time Complexity: O(N), where N is the number of nodes in the Binary Tree.
 
-Each recursive call to the helper function adds a new frame on the call stack. On average we will never have more than log(n) recursive calls on the call stack, since we eliminate half the nodes in the remaining tree at each recursive call. In the worst case, when we are dealing with a very imbalanced binary tree, we would have O(n) space from the recursive calls, since we have n recursive calls on the call stack at once. Besides the space from the recursive calls, we also return an array of branch sums. The size of the array is same as the number of branches in the Binary Tree, which is the number of leaf nodes in the Binary Tree. There are roughly half of n leaf nodes in the Binary Tree and half of n is equal to O(n) in the space time complexity analysis.
+- Space Complexity: O(N), where N is the number of nodes in the Binary Tree. Each recursive call to the `calculateBranchSums` function adds a new frame on the call stack. On average we will never have more than
+  log(N) recursive calls on the call stack, since we eliminate half the nodes in the remaining tree at each recursive call. In the worst case, when the input tree is very imbalanced, we would have O(N) space from the recursive calls, since we would have N recursive calls on the call stack at once. Besides the space utilized by the recursive calls, we also return an array of branch sums. The size of the array is same as the number of branches in the Binary Tree, which is the number of leaf nodes in the Binary Tree. There are roughly half of N leaf nodes in the Binary Tree and half of N is equal to O(N) in the space time complexity analysis.

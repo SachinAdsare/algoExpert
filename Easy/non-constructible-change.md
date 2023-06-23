@@ -8,9 +8,15 @@ We are given an array of positive integers, which represent the values of coins 
 
 ### Approach 1: Brute Force
 
-Iterate from 1 to the maximum amount of change that I can create, which is the value that all of the coins in the input array sum up to. At each iteration, find out if we can sum up to the current value using our coins; if we can't then the minimum amount of change is found. If we get out of the loop without returning the result, return maximum amount of change + 1.
+Iterate from `1` to the maximum amount of change that we can create, which is the value that all of the coins in the input array sum up to. At each iteration, find out if we can sum up to the current value using our coins. If we can't, then the minimum amount of change is found. If we get out of the loop without returning the result, return `maximum amount of change + 1`.
 
-To find out if there is a subset in the input array that adds up to a target value, I can first sort the array in ascending order, then iterate through every integer in the sorted array, starting from the last one; for each integer, compare it with the target value, if the integer is equal to the target value, then the subset is found; if the integer is smaller than the target value, subtract it from the target value and update the target value to the result, move to the next integer. If the very beginning of the input array is reached and the target value is still larger than 0, then I find the value that no subset can add up to.
+To find out if there is a subset in the input array that adds up to a target value, we can first sort the array in ascending order, then iterate backwards through every integer in the sorted array. For each integer, we compare it with the target value:
+
+- If it is equal to the target value, then the subset is found.
+
+- If it is smaller than the target value, subtract it from the target value and update the target value to the result, move on to the next integer.
+
+If we reach the very beginning of the input array and the target value is still greater than `0`, then we find the value that no subset can add up to.
 
 ### Implementation
 
@@ -21,31 +27,32 @@ function nonConstructibleChange(coins) {
 
   for (let sum = 1; sum < maximumSum; sum++) {
     let currentSum = sum;
+
     for (let i = coins.length - 1; i >= 0; i--) {
       const currentValue = coins[i];
-      if (currentValue <= currentSum) {
-        currentSum -= currentValue;
-      }
-      if (currentSum === 0) {
-        break;
-      }
+
+      if (currentValue <= currentSum) currentSum -= currentValue;
+
+      if (currentSum === 0) break;
     }
 
-    if (currentSum > 0) {
-      return sum;
-    }
+    if (currentSum > 0) return sum;
   }
 
   return maximumSum + 1;
 }
 ```
 
-### Time & Space Complexity
+### Complexity Analysis
 
-O(m \* n) time | O(1) space, where n is the number of coins and m is the sum that all of the coins add up to.
+- Time Complexity: O(M · N), where N is the number of coins and M is the sum that all the coins add up to. The
+  O(N · log(N)) runtime of the sorting step is not reflected in the final time complexity, because the nested loops take O(M · N) time. The input array contains only positive integers, so the minimum value we can have is `1`. Suppose the number of coins is `10` and all the coins are `1`. The sum of all the coins is going to be `10`. Therefore M must be equal to or greater than N.
 
-The O(nlog(n)) runtime of the sorting step is not reflected in the final time complexity, because the nested loops take O(m \* n) time. The input array contains only positive integers, so the minimum value we can have is `1`. Suppose the number of coins is `10` and all the coins are `1`. The sum of all the coins is going to be `10`.
-Therefore `m` must be equal to or greater than `n`. When `m = n`, `O(n * log(n) + m * n) = O(n * log(n) + n * n) = O(n * n)`, since `n * n` is always greater than `n * log(n)`. When `m > n`, `O(n * log(n) + m * n) = O(n * (log(n) + m)) = O(n) * O(log(n) + m) = O(n * m)`, since `(m + log(n)) < (2 * m)`.
+  - When M == N, O(N \* log(N) + M \* N) = O(N \* log(N) + N \* N) = O(N \* N), since N \* N is always greater than N \* log(N).
+
+  - When M > N, O(N \* log(N) + M \* N) = O(N \* (log(N) + M)) = O(N) \* O(log(N) + M) = O(N \* M), since (log(N)+ M) < (2 \* M).
+
+- Space Complexity: O(log(N)) or O(N), depending on the implementation of the sorting algorithm.
 
 #
 
@@ -153,13 +160,17 @@ We can arrive at the following conclusion:
 
 Imagine we have a set of coin called `U`. In this set we have now one coin and its value is 1: `U = {1}`. Imagine we have another value called `C`, representing the change we can create with our coins: `C = 1`. We have also `V` which represents the new coin we add to our set. If `V > C + 1`, we cannot make `C + 1` change; if `V <= C + 1`, we can make from `C` to `C + V` change, and the minimum amount of change we cannot create is `C + V + 1`.
 
-So to solve the problem, what we need to do is:
+**Algorithm**
 
-- Sort the input array in ascending order,
-- Use a variable to keep track of the current change we create. Initiate it to 0.
+- Sort the input array in ascending order.
+
+- Use a variable to keep track of the current change we create. Initiate it to `0`.
+
 - Iterate through every integer in the sorted array.
-  - For every integer, compare it to the current change, if it is greater than the current change, we found the minimum amount of change we cannot make, which is current change we make plus 1, return the result; otherwise, add the integer to the current change.
-- If we get out of the loop without returning the result, return current change we make plus 1.
+
+  - For every integer, compare it to the current change. If it is greater than the current change, we found the minimum amount of change we cannot make, which is current change we make plus `1`, return the result. Otherwise, add the integer to the current change.
+
+- If we get out of the loop without returning the result, return current change we make plus `1`.
 
 ### Implementation
 
@@ -208,6 +219,8 @@ func NonConstructibleChange(coins []int) int {
 }
 ```
 
-### Time & Space Complexity
+### Complexity Analysis
 
-O(nlog(n)) time | O(1) space, where n is the number of coins.
+- Time Complexity: O(N · log(N)), where N is the number of coins..
+
+- Space Complexity: O(log(N)) or O(N), depending on the implementation of the sorting algorithm.

@@ -2,49 +2,74 @@
 
 ### Understanding the problem
 
-Given an array of distinct integers and an integer representing a target sum, write a function that find all combinations of three numbers in the array that add up to the target sum. The function should return a 2-dimensional array of all these combinations. The numbers in each combination should be ordered in ascending order, and the combinations themselves should also be ordered in ascending order, for instance: `[[-8, 2, 6],[-8, 3, 5], [-6, 1, 5]]`. If there is no such combination, return an empty array.
+We are given an array of distinct integers and an integer that represents a target sum. We are asked to write a function that is going to find all the triplets in the array that sum to the target value and return them in a 2-dimensional array. The triplets should be ordered in ascending order, and so are the numbers in each triplets. For instance, if the triplets we found are: `[5, -6, 1]`, `[2, -8, 6]` and `[3, 5, -8]`, then we should return `[[-8, 2, 6], [-8, 3, 5], [-6, 1, 5]]`. If there is no such triplet, return an empty array.
 
 #
 
-### Approach
+### Approach: Sorting + Two Pointers
 
-I can kind of break this problem down into a smaller, easier to solve problem. The basic idea is, iterate through every integers in the array; at each integer, subtract it from the target sum, now it becomes a two number sum problem - find all pairs of numbers in the rest of the array that sum up to the difference between the integer and the target sum, which can be solved with the two pointers approach. In order to use the two pointers approach, and since the result should be ordered in ascending order, I need to sort the array in ascending order at the beginning. The two pointers approach works like this:
+Since the triplets must sums to the target value, `a + b + c = targetSum`, where `a`, `b` and `c` denote the values in a triplet. Rewriting the equation, we can get:
 
-- Initialize two pointers, one called `left` and the other called `right`, set the `left` pointer to the beginning of the rest of the array, and the `right` pointer to the end of the rest of the array.
-- Add up the values that the two pointers point to, if the sum is smaller than the target, here it is the difference between current integer and the target sum, move the `left` pointer to the right by one; if the sum is bigger than the target, move the `right` pointer to the left by one; if it is equal to the target, then I found the pair, move the `left` pointer to right and the `right` pointer to left, if I move only one pointer, the next sum is definitely either smaller or larger than the target, since all integers in the array are distinct. Keep moving both pointers until they point to the same number.
+```
+a + b + c   = targetSum
+a + (b + c) = targetSum
+b + c       = targetSum - a
+```
 
-### Time & Space Complexity
+We can notice that it becomes a Two Number Sum problem: Find the pair in the rest of the array that adds up to `targetSum - a`. Hence, we can solve the problem by iterating through every integers in the array and for each integer apply one of the Two Number Sum problem's solutions to find the other two numbers in the rest of the array. There are two ways to solve the Two Number Sum problem, one uses a hashmap to find complement values and the other one uses the two pointers approach and requires the array to be sorted. Since we are asked to return the triplets in ascending order and the values in each triplet need to be ordered in ascending order as well, it would be sensible to use the two pointers approach.
 
-O(n^2) time | O(n) space, where n is the length of the input array.
-
-The O(nlog(n)) runtime of the sorting step is not reflected in the final time complexity, because the nested loops run in O(n^2) time; this dwarfs the O(nlog(n)) runtime of the sorting step and allows us to remove it from the overall time complexity.
-
-### Solution
+### Implementation
 
 ```js
 function threeNumberSum(array, targetSum) {
   array.sort((a, b) => a - b);
+
   const triplets = [];
 
   for (let i = 0; i < array.length - 2; i++) {
-    const firstNum = array[i];
-    const currentDifference = targetSum - firstNum;
-    let left = i + 1;
-    let right = array.length - 1;
-    while (left < right) {
-      const currentSum = array[left] + array[right];
-      if (currentSum === currentDifference) {
-        triplets.push([firstNum, array[left], array[right]]);
-        left++;
-        right--;
-      } else if (currentSum > currentDifference) {
-        right--;
-      } else {
-        left++;
-      }
-    }
+    twoNumberSum(array, i, targetSum, triplets);
   }
 
   return triplets;
 }
+
+function twoNumberSum(array, i, targetSum, triplets) {
+  let left = i + 1;
+  let right = array.length - 1;
+
+  while (left < right) {
+    const currSum = array[i] + array[left] + array[right];
+
+    if (currSum === targetSum) {
+      triplets.push([array[i], array[left], array[right]]);
+      left++;
+      right--;
+    } else if (currSum > targetSum) {
+      right--;
+    } else {
+      left++;
+    }
+  }
+}
 ```
+
+### Complexity Analysis
+
+Let N be the length of the input array.
+
+- Time Complexity: O(N^2).
+
+  The nested loops take O(N^2) time, so it is the dominant term in the total time complexity.
+
+- Space Complexity: O(N).
+
+  If we ignore the space required for the output array, the space complexity of the algorithm can be O(1) when the
+  sorting algorithm we are using takes O(1) space, e.g. bubble sort. Since the overall time complexity of the algorithm is O(N^2), using an in-place sorting algorithm such as bubble sort (which has worst case time complexity of O(N^2)) won't change the upper bound.
+
+#
+
+### Follow-up
+
+What if the input array contains duplicates and the output array must not include duplicate triplets?
+
+[3Sum](https://leetcode.com/problems/3sum/)
